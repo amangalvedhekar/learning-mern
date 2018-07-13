@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "server": "nodemon server.js"
+    "server": "nodemon server.js",
+    "docs": "jsdoc routes/api/*.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -20,6 +21,9 @@
     "validator": "^9.4.1"
   },
   "devDependencies": {
+    "jsdoc": "^3.5.5",
+    "jsdoc-route-plugin": "^0.1.0",
+    "jsdoc-to-markdown": "^4.0.1",
     "nodemon": "^1.17.3"
   },
   "repository": {
