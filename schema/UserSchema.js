@@ -1,4 +1,4 @@
-const UserSchema = {
+module.exports = {
   name: {
     type: String,
     required: true,
@@ -13,12 +13,9 @@ const UserSchema = {
   },
   avatar: {
     type: String,
-    required: true,
   },
   date: {
     type: Date,
     default: Date.now,
   },
 };
-
-module.exports = UserSchema;
