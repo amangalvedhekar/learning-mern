@@ -5,6 +5,7 @@ const router = express.Router();
 const resMessage = {
   msg: 'profile works',
 };
+
 const test = (req, res) => {
   res.json(resMessage);
 };
