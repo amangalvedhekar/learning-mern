@@ -63,11 +63,13 @@ const userLogin = (req, res) => {
 
   findUser('email', userEmailLens, req)
     .then(user => {
-
       if (!user) {
-        return res
-          .status(404)
-          .send({ email: 'User not found' });
+        return sendResponseObject(
+          res,
+          404,
+          { email: 'User not found' },
+          req.body
+        );
       }
 
       bcrypt
