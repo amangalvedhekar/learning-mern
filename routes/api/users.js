@@ -1,93 +1,67 @@
 const express = require('express');
-const gravator = require('gravatar');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const view = require('ramda').view;
 const partialRight = require('ramda').partialRight;
+const partial = require('ramda').partial;
+const pick = require('ramda').pick;
 
 const router = express.Router();
 
-const User = require('../../models/User');
 const secretKeys = require('../../config/key').secretOrKey;
 
 const {
   userEmailLens,
-  userFirstNameLens,
-  userLastNameLens,
   userPasswordLens,
 } = require('../../lens/userRegistration');
 
+const {
+  getHash,
+  getSalt
+} = require('../../util/bcrypt');
+
+const {
+  findUser,
+  saveUser,
+} = require('../../util/user');
+
+const {
+  sendResponseObject,
+} = require('../../util');
+
+
 const registerUser = (user, req, res) => {
 
-  const userEmail = view(userEmailLens, req);
-  const firstName = view(userFirstNameLens, req);
-  const lastName = view(userLastNameLens, req);
-  const email = view(userEmailLens, req);
   const password = view(userPasswordLens, req);
 
   if (user) {
-    return res
-      .status(400)
-      .json({ email: 'Email already exists' });
+    return sendResponseObject(
+      res,
+      400,
+      { email: 'Email already exists' },
+      req.body
+    );
   }
-  const gravatorSettings = {
-    s: '200',
-    r: 'pg',
-    d: 'mm',
-  };
 
-  const avatar = gravator.url(
-    userEmail,
-    gravatorSettings
-  );
-
-  const hashPassword = (err, password) => {
-    if (err) {
-      console.log(err, 'error hashing');
-      throw err;
-    }
-    const newUser = new User({
-      firstName,
-      lastName,
-      email,
-      avatar,
-      password,
-    });
-
-    newUser
-      .save()
-      .then(user => res.json(user))
-      .catch(e => console.log(e));
-  };
-
-  const generateSalt = (err, salt) => {
-    bcrypt.hash(password, salt, hashPassword);
-  };
-
-  //ToDo: use promises instead of callbacks
-  bcrypt.genSalt(10, generateSalt);
-
-  // console.log(bcrypt.genSalt(10).then(salt => partial(bcrypt.hash(salt, [password]))));
+  getSalt()
+    .then(partial(getHash, [password]))
+    .then(partialRight(saveUser, [req]))
+    .then(user => res.json(user))
+    .catch(err => console.log(err, 'inside err'));
 };
 
 //ToDo: use logger
 const userRegistration = (req, res) => {
-  const email = {
-    email: view(userEmailLens, req),
-  };
-  User
-    .findOne(email)
+  findUser('email', userEmailLens, req)
     .then(partialRight(registerUser, [req, res]))
-    .catch(e => console.log(e, 'error saving in registring user'));
+    .catch(e => console.log(e, 'error in registering user'));
 };
 
 const userLogin = (req, res) => {
-  const email = req.body.email;
   const password = req.body.password;
 
-  User
-    .findOne({ email })
+  findUser('email', userEmailLens, req)
     .then(user => {
 
       if (!user) {
