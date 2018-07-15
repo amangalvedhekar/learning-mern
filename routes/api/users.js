@@ -30,10 +30,17 @@ const {
   sendResponseObject,
 } = require('../../util');
 
+const validateRegisterInput = require('../../validation/register');
 
 const registerUser = (user, req, res) => {
 
   const password = view(userPasswordLens, req);
+
+  const { errors, isValid } = validateRegisterInput(req.body);
+
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
 
   if (user) {
     return sendResponseObject(
