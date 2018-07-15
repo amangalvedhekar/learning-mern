@@ -25,7 +25,7 @@ class Login extends Component {
       password: this.state.password,
     };
 
-    console.log('login data', loginUser, e);
+
   };
 
   render() {
