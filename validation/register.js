@@ -1,59 +1,130 @@
-const Validator = require('validator');
-const isEmpty = require('./is-empty');
+const {
+  userConfirmPasswordLens,
+  userEmailLens,
+  userErrorEmailLens,
+  userErrorConfirmPasswordLens,
+  userErrorFirstNameLens,
+  userErrorLastNameLens,
+  userErrorPasswordLens,
+  userFirstNameLens,
+  userLastNameLens,
+  userPasswordLens
+} = require('../lens/userRegistration');
 
+const view = require('ramda').view;
+const set = require('ramda').set;
+
+const {
+  isEqual,
+  isNilOrEmpty,
+  minMaxLengthValidation,
+} = require('../util/validations');
+
+const {
+  minNameLength,
+  maxNameLength,
+  minPasswordLength,
+  maxPasswordLength
+} = require('../util/constants');
+
+/**
+ *
+ * @param data
+ * @returns object
+ */
 module.exports = function validateRegisterInput(data) {
-  let errors = {};
+  const errors = {
+    firstName: '',
+    lastName: '',
+    password: '',
+    confirmPassword: '',
 
-  data.firstName = !isEmpty(data.firstName) ? data.firstName : '';
-  data.lastName = !isEmpty(data.lastName) ? data.lastName : '';
-  data.email = !isEmpty(data.email) ? data.email : '';
-  data.password = !isEmpty(data.password) ? data.password : '';
-  data.confirmPassword = !isEmpty(data.confirmPassword) ? data.confirmPassword : '';
+  };
 
-  if (Validator.isEmpty(data.firstName)) {
-    errors.firstName = 'First Name field is required';
+  const firstName = view(userFirstNameLens, data);
+  const lastName = view(userLastNameLens, data);
+  const email = view(userEmailLens, data);
+  const password = view(userPasswordLens, data);
+  const confirmPassword = view(userConfirmPasswordLens, data);
+
+  const firstNameValidation = isNilOrEmpty(firstName);
+  const lastNameValidation = isNilOrEmpty(lastName);
+  const emailValidation = isNilOrEmpty(email);
+  const passwordValidation = isNilOrEmpty(password);
+  const confirmPasswordValidation = isNilOrEmpty(confirmPassword);
+
+  if (firstNameValidation) {
+    const firstNameError = set(userErrorFirstNameLens, 'Please enter first name', errors);
+    return Object.assign({ error: firstNameError }, { isValid: false }, {});
   }
 
-  if (Validator.isEmpty(data.lastName)) {
-    errors.lastName = 'Last Name field is required';
+  if (lastNameValidation) {
+    const lastNameError = set(userErrorLastNameLens, 'Please enter last name', errors);
+    return Object.assign({ error: lastNameError }, { isValid: false, }, {});
   }
 
-
-  if (!Validator.isLength(data.firstName, { min: 2, max: 30 })) {
-    errors.firstName = 'First Name must be between 2 and 30 characters';
+  if (emailValidation) {
+    const emailError = set(userErrorEmailLens, 'Please enter email', errors);
+    return Object.assign({ error: emailError }, { isValid: false }, {});
   }
 
-  if (!Validator.isLength(data.lastName, { min: 2, max: 30 })) {
-    errors.lastName = 'Last Name must be between 2 and 30 characters';
+  if (passwordValidation) {
+    const passwordError = set(userErrorPasswordLens, 'Please enter password', errors);
+    return Object.assign({ error: passwordError }, { isValid: false }, {});
   }
 
-
-  if (Validator.isEmpty(data.email)) {
-    errors.email = 'Email field is required';
+  if (confirmPasswordValidation) {
+    const confirmPasswordError = set(userErrorConfirmPasswordLens, 'Please enter password again', errors);
+    return Object.assign({ error: confirmPasswordError }, { isValid: false }, {});
   }
 
-  if (!Validator.isEmail(data.email)) {
-    errors.email = 'Email is invalid';
+  if (!minMaxLengthValidation(minNameLength, maxNameLength, firstName)) {
+    const firstNameLengthError = set(
+      userErrorFirstNameLens,
+      `First name should be between ${minNameLength} and ${maxNameLength} characters`,
+      errors
+    );
+    return Object.assign({error: firstNameLengthError}, {isValid: false}, {});
   }
 
-  if (Validator.isEmpty(data.password)) {
-    errors.password = 'Password field is required';
+  if (!minMaxLengthValidation(minNameLength, maxNameLength, lastName)) {
+    const lastNameLengthError = set(
+      userErrorFirstNameLens,
+      `Last name should be between ${minNameLength} and ${maxNameLength} characters`,
+      errors
+    );
+    return Object.assign({error: lastNameLengthError}, {isValid: false}, {});
   }
 
-  if (!Validator.isLength(data.password, { min: 6, max: 30 })) {
-    errors.password = 'Password must be at least 6 characters';
+  if (!minMaxLengthValidation(minPasswordLength, maxPasswordLength, password)) {
+    const passwordLengthError = set(
+      userErrorFirstNameLens,
+      `Password should be between ${minPasswordLength} and ${maxPasswordLength} characters`,
+      errors
+    );
+    return Object.assign({error: passwordLengthError}, {isValid: false}, {});
   }
 
-  if (Validator.isEmpty(data.confirmPassword)) {
-    errors.confirmPassword = 'Confirm Password field is required';
+  if (!minMaxLengthValidation(minPasswordLength, maxPasswordLength, confirmPassword)) {
+    const confirmPasswordLengthError = set(
+      userErrorFirstNameLens,
+      `Password should be between ${minPasswordLength} and ${maxPasswordLength} characters`,
+      errors
+    );
+    return Object.assign({error: confirmPasswordLengthError}, {isValid: false}, {});
   }
 
-  if (!Validator.equals(data.password, data.confirmPassword)) {
-    errors.confirmPassword = 'Passwords must match';
-  }
+  if(!isEqual(password, confirmPassword)){
+    const passwordMatchError = set(
+      userErrorPasswordLens,
+      'Passwords don\'t match',
+      errors
+    );
 
+    return Object.assign({error: passwordMatchError}, {isValid: false}, {});
+  }
   return {
     errors,
-    isValid: isEmpty(errors)
+    isValid: true,
   };
 };

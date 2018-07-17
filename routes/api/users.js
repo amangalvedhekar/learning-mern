@@ -5,7 +5,6 @@ const passport = require('passport');
 const view = require('ramda').view;
 const partialRight = require('ramda').partialRight;
 const partial = require('ramda').partial;
-const pick = require('ramda').pick;
 
 const router = express.Router();
 
@@ -36,19 +35,15 @@ const registerUser = (user, req, res) => {
 
   const password = view(userPasswordLens, req);
 
-  const { errors, isValid } = validateRegisterInput(req.body);
+  const { error, isValid } = validateRegisterInput(req);
 
+  //User did not send all required fields..return early
   if (!isValid) {
-    return res.status(400).json(errors);
+    return sendResponseObject(res, 400, error, req.body);
   }
 
   if (user) {
-    return sendResponseObject(
-      res,
-      400,
-      { email: 'Email already exists' },
-      req.body
-    );
+    return sendResponseObject(res, 400, { email: 'Email already exists' }, req.body);
   }
 
   getSalt()
