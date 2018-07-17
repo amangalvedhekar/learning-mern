@@ -20,7 +20,7 @@ class App extends Component {
       <Provider
         store={store}>
         <Router>
-          <div>
+          <div className="App">
             <Navbar/>
             <Route
               exact
