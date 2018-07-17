@@ -12,6 +12,7 @@ import Footer from './components/layout/Footer';
 import Register from './components/auth/Register';
 import Login from './components/auth/Login';
 
+import '../node_modules/bootstrap/dist/css/bootstrap.css';
 import './App.css';
 
 class App extends Component {
