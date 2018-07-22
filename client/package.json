@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@crave/farmblocks-alert": "^3.0.33",
+    "@crave/farmblocks-button": "^4.0.5",
+    "@crave/farmblocks-card": "^0.4.0",
+    "@crave/farmblocks-empty-state": "^1.1.1",
+    "@crave/farmblocks-input-text": "^1.4.4",
     "axios": "^0.18.0",
     "bootstrap": "^4.1.2",
     "classnames": "^2.2.5",
@@ -16,7 +21,9 @@
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.1.4",
+    "recompose": "^0.27.1",
     "redux": "^3.7.2",
+    "redux-devtools-extension": "^2.13.5",
     "redux-thunk": "^2.2.0"
   },
   "scripts": {
