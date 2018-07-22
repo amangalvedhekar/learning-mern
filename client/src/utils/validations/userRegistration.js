@@ -18,7 +18,7 @@ const validate = userObject => {
   };
 
   const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  
+
   if (userName.length <= 2 || userName.length >= 60) {
     error.userName.push('User Name should be more than 2 characters')
   }
