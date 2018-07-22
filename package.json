@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Learning express and mongoose by building social network application",
   "main": "server.js",
+  "engines": {
+    "node": "8.9.4"
+  },
   "scripts": {
     "client-install": "npm install --prefix client",
     "start": "node server.js",
